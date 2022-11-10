@@ -1,0 +1,17 @@
+#!/bin/bash
+if hash python3
+    echo "python is found"
+    echo "Setting up..."
+    sudo chmod -R 755 $(pwd)/
+    $(pwd)/scripts/env.sh
+    $(pwd)/scripts/installation.sh
+    exit 1
+then
+    echo "python is not installed"
+fi
+
+ver=$(python -V 2>&1 | sed 's/.* \([0-9]\).\([0-9]\).*/\1\2/')
+if [ "$ver" -lt "27" ]; then
+    echo "This script requires python 2.7 or greater"
+    exit 1
+fi
