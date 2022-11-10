@@ -7,7 +7,12 @@ else
   for package in "$@"
   do
     pip install $package
-    '\n' >> requirements.txt
-    pip freeze | grep -i $package >> requirements.txt
+    pkg=$(pip freeze | grep -i $package)
+    if grep -Fq $pkg requirements.txt
+    then
+      echo "skipping entry in requirements.txt"
+    else
+        pip freeze | grep -i $package >> requirements.txt
+    fi
   done
 fi
