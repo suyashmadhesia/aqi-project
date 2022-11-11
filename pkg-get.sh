@@ -12,7 +12,8 @@ else
     then
       echo "skipping entry in requirements.txt"
     else
-        pip freeze | grep -i $package >> requirements.txt
+      echo "adding entry in requirements.txt"
+      pip freeze | grep -i $package >> requirements.txt
     fi
   done
 fi
