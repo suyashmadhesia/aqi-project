@@ -5,9 +5,10 @@ if hash python3
     sudo chmod -R 755 $(pwd)/
     $(pwd)/scripts/env.sh
     $(pwd)/scripts/installation.sh
-    exit 1
+    exit 0
 then
     echo "python is not installed"
+    exit 1
 fi
 
 ver=$(python -V 2>&1 | sed 's/.* \([0-9]\).\([0-9]\).*/\1\2/')
