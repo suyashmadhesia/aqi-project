@@ -1,8 +1,10 @@
 $(pwd)/scripts/env.sh
 source $(pwd)/env/bin/activate || $(pwd)/env/Scripts/activate
+RED='\033[0;31m'
 if test "$#" -eq 0
 then 
-  echo $'Provide at least one Python package name\n' 
+  printf "${RED}err: Provide at least one Python package name\n${RED}"
+  exit 1
 else 
   for package in "$@"
   do

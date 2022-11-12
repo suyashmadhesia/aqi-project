@@ -1,20 +1,21 @@
 source $(pwd)/env/bin/activate || $(pwd)/env/Scripts/activate
+RED='\033[0;31m'
 if test "$#" -eq 0
 then 
-  echo $'Provide at branch name\n' 
+  printf "${RED}err: Provide a environment name\n${RED}"
   exit 1
 fi
 if [ "$1" = "local" ];
 then
-    echo "Running locally"
+    echo "Running locally..."
     uvicorn main:app --reload
     exit 0
 elif [ "$1" = "server" ]
 then
-    echo "Running on server"
+    echo "Running on server..."
     uvicorn main:app
     exit 0
 else
-    echo "Invalid argument"
+    printf "${RED}err: Invalid environment name...${RED}\n"
     exit 1
 fi
