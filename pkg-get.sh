@@ -1,5 +1,11 @@
 $(pwd)/scripts/env.sh
-source $(pwd)/env/bin/activate || $(pwd)/env/Scripts/activate
+SCR="$(pwd)/env/bin/activate"
+if [ -e "$SCR" ]
+then
+    source $(pwd)/env/bin/activate
+else
+    $(pwd)/env/Scripts/activate
+fi  
 RED='\033[0;31m'
 if test "$#" -eq 0
 then 
