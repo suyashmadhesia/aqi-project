@@ -4,5 +4,5 @@ PWD="$(pwd)"
         echo "virtual environment exists"
     else
         echo $'virtual environment does not exist \n creating virtual environment...'
-        python3 -m venv env
+        python3 -m venv env || python -m venv env
     fi

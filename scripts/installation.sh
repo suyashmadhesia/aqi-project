@@ -1,5 +1,5 @@
 $(pwd)/scripts/env.sh
-source env/bin/activate
+source $(pwd)/env/bin/activate || $(pwd)/env/Scripts/activate
 if [ -e requirements.txt ]
 then
     echo "installing packages from requirements.txt"

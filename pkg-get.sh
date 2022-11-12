@@ -1,5 +1,5 @@
 $(pwd)/scripts/env.sh
-source env/bin/activate
+source $(pwd)/env/bin/activate || $(pwd)/env/Scripts/activate
 if test "$#" -eq 0
 then 
   echo $'Provide at least one Python package name\n' 

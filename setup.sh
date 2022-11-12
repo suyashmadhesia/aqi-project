@@ -1,5 +1,5 @@
 #!/bin/bash
-if hash python3
+if hash python3 || hash python
     echo "python is found"
     echo "Setting up..."
     sudo chmod -R 755 $(pwd)/
