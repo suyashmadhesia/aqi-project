@@ -1,4 +1,5 @@
-$(pwd)/scripts/env.sh
+#!/bin/bash
+$(pwd)/scripts/env
 SCR="$(pwd)/env/bin/activate"
 if [ -e "$SCR" ]
 then
@@ -15,7 +16,8 @@ else
   for package in "$@"
   do
     pip install $package
-    pkg=$(pip freeze | grep -i $package)
+    pkg=$(pip freeze | grep -i "${package}=")
+    # echo "${pkg}"
     if grep -Fq $pkg requirements.txt
     then
       echo "skipping entry in requirements.txt"
@@ -24,4 +26,5 @@ else
       pip freeze | grep -i $package >> requirements.txt
     fi
   done
+  exit 0
 fi

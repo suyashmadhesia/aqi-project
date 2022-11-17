@@ -1,4 +1,5 @@
-$(pwd)/scripts/env.sh
+#!/bin/bash
+$(pwd)/scripts/env
 SCR="$(pwd)/env/bin/activate"
 if [ -e "$SCR" ]
 then

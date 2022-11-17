@@ -3,8 +3,8 @@ if hash python3 || hash python
     echo "python is found"
     echo "Setting up..."
     sudo chmod -R 755 $(pwd)/
-    $(pwd)/scripts/env.sh
-    $(pwd)/scripts/installation.sh
+    $(pwd)/scripts/env
+    $(pwd)/scripts/installation
     exit 0
 then
     echo "python is not installed"

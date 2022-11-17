@@ -1,0 +1,37 @@
+#!/bin/bash
+SCR="$(pwd)/env/bin/activate"
+if [ -e "$SCR" ]
+then
+    source $(pwd)/env/bin/activate
+else
+    source $(pwd)/env/Scripts/activate
+fi 
+RED='\033[0;31m'
+if test "$#" -eq 0
+then 
+  printf "${RED}Err: Provide a name what to run..\n${RED}"
+  printf "Given Scripts:\n"
+  printf "1. local:Run fastapi server locally with --watch changes\n2. server:Run fastapi server but without watching change\n3. notebook:Run server for jupyter notebook\n"
+  exit 1
+fi
+if [ "$1" = "local" ];
+then
+    echo "Running locally..."
+    uvicorn main:app --reload || exit 1
+    exit 0
+elif [ "$1" = "server" ]
+then
+    echo "Running on server..."
+    uvicorn main:app || exit 1
+    exit 0
+elif [ "$1" = "notebook" ]
+then
+    echo "Running jupyter notebook server..."
+    jupyter notebook || exit 1
+    exit 0
+else
+    printf "${RED}err: Invalid environment name...${RED}\n"
+    printf "Given Scripts:\n"
+    printf "1. local:Run fastapi server locally with --watch changes\n2. server:Run fastapi server but without watching change\n3. notebook:Run server for jupyter notebook\n"
+    exit 1
+fi
