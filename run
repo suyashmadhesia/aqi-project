@@ -27,7 +27,7 @@ then
 elif [ "$1" = "notebook" ]
 then
     echo "Running jupyter notebook server..."
-    jupyter notebook || exit 1
+    jupyter notebook --no-browser || exit 1
     exit 0
 else
     printf "${RED}err: Invalid environment name...${RED}\n"
