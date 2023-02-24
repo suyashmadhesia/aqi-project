@@ -1,122 +1,34 @@
-import array
-import micropython
-import utime
-from machine import Pin
-from micropython import const
- 
-class InvalidChecksum(Exception):
-    pass
- 
-class InvalidPulseCount(Exception):
-    pass
- 
-MAX_UNCHANGED = const(100)
-MIN_INTERVAL_US = const(200000)
-HIGH_LEVEL = const(50)
-EXPECTED_PULSES = const(84)
- 
-class DHT11:
-    _temperature: float
-    _humidity: float
- 
-    def __init__(self, pin):
-        self._pin = pin
-        self._last_measure = utime.ticks_us()
-        self._temperature = -1
-        self._humidity = -1
- 
-    def measure(self):
-        current_ticks = utime.ticks_us()
-        if utime.ticks_diff(current_ticks, self._last_measure) < MIN_INTERVAL_US and (
-            self._temperature > -1 or self._humidity > -1
-        ):
-            # Less than a second since last read, which is too soon according
-            # to the datasheet
-            return
- 
-        self._send_init_signal()
-        pulses = self._capture_pulses()
-        buffer = self._convert_pulses_to_buffer(pulses)
-        self._verify_checksum(buffer)
- 
-        self._humidity = buffer[0] + buffer[1] / 10
-        self._temperature = buffer[2] + buffer[3] / 10
-        self._last_measure = utime.ticks_us()
- 
-    @property
-    def humidity(self):
-        self.measure()
-        return self._humidity
- 
-    @property
-    def temperature(self):
-        self.measure()
-        return self._temperature
- 
-    def _send_init_signal(self):
-        self._pin.init(Pin.OUT, Pin.PULL_DOWN)
-        self._pin.value(1)
-        utime.sleep_ms(50)
-        self._pin.value(0)
-        utime.sleep_ms(18)
- 
-    @micropython.native
-    def _capture_pulses(self):
-        pin = self._pin
-        pin.init(Pin.IN, Pin.PULL_UP)
- 
-        val = 1
-        idx = 0
-        transitions = bytearray(EXPECTED_PULSES)
-        unchanged = 0
-        timestamp = utime.ticks_us()
- 
-        while unchanged < MAX_UNCHANGED:
-            if val != pin.value():
-                if idx >= EXPECTED_PULSES:
-                    raise InvalidPulseCount(
-                        "Got more than {} pulses".format(EXPECTED_PULSES)
-                    )
-                now = utime.ticks_us()
-                transitions[idx] = now - timestamp
-                timestamp = now
-                idx += 1
- 
-                val = 1 - val
-                unchanged = 0
-            else:
-                unchanged += 1
-        pin.init(Pin.OUT, Pin.PULL_DOWN)
-        if idx != EXPECTED_PULSES:
-            raise InvalidPulseCount(
-                "Expected {} but got {} pulses".format(EXPECTED_PULSES, idx)
-            )
-        return transitions[4:]
- 
-    def _convert_pulses_to_buffer(self, pulses):
-        """Convert a list of 80 pulses into a 5 byte buffer
-        The resulting 5 bytes in the buffer will be:
-            0: Integral relative humidity data
-            1: Decimal relative humidity data
-            2: Integral temperature data
-            3: Decimal temperature data
-            4: Checksum
-        """
-        # Convert the pulses to 40 bits
-        binary = 0
-        for idx in range(0, len(pulses), 2):
-            binary = binary << 1 | int(pulses[idx] > HIGH_LEVEL)
- 
-        # Split into 5 bytes
-        buffer = array.array("B")
-        for shift in range(4, -1, -1):
-            buffer.append(binary >> shift * 8 & 0xFF)
-        return buffer
- 
-    def _verify_checksum(self, buffer):
-        # Calculate checksum
-        checksum = 0
-        for buf in buffer[0:4]:
-            checksum += buf
-        if checksum & 0xFF != buffer[4]:
-            raise InvalidChecksum()
+def read_dht():
+    data = bytearray(5)
+    # Send start signal to the sensor
+    dht_pin.init(machine.Pin.OUT)
+    dht_pin.low()
+    time.sleep(0.018)
+    dht_pin.high()
+    dht_pin.init(machine.Pin.IN, machine.Pin.PULL_UP)
+    # Wait for the sensor to respond
+    for i in range(10000):
+        if dht_pin.value() == 0:
+            break
+    else:
+        raise OSError("Sensor did not respond")
+    # Read the data from the sensor
+    for i in range(5):
+        data[i] = 0
+        for j in range(8):
+            while dht_pin.value() == 0:
+                pass
+            time.sleep_us(30)
+            if dht_pin.value() == 1:
+                data[i] |= 1 << (7 - j)
+        dht_pin.init(machine.Pin.OUT)
+        dht_pin.low()
+        time.sleep_us(40)
+        dht_pin.high()
+    # Checksum validation
+    if (data[0] + data[1] + data[2] + data[3]) & 0xff != data[4]:
+        raise OSError("Checksum error")
+    # Calculate temperature and humidity values
+    humidity = data[0]
+    temperature_c = data[2]
+    return temperature_c, humidity
