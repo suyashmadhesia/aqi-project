@@ -34,7 +34,7 @@ const Card5 = () => (
           Current AQI: 250
         </Text>
         <Button bordered color="warning" auto>
-          Referesh
+          Refresh
         </Button>
       </Row>
     </Card.Footer>
