@@ -1,4 +1,5 @@
 import pickle
+import random
 from rest_framework.views import APIView
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.response import Response
@@ -14,13 +15,12 @@ class AQIView(APIView):
     
     def get(self, request):
         aqi_data = AQI.objects.all()
-        aqi_data = aqi_data[len(aqi_data)-1]
+        aqi_data = aqi_data.filter(id=len(aqi_data)).first()
         currentValue = { 'PM2.5': [aqi_data.pm25], 'PM10':[aqi_data.pm10], 'NO':[aqi_data.no], 'NO2':[aqi_data.no2], 'NOx':[aqi_data.nox], 'CO': [aqi_data.co]}
-        print(currentValue)
         data = pd.DataFrame(currentValue)
         transformed_data = scaler.transform(data)
         pred = aqi_model.predict(transformed_data)
-        return Response({'AQI': pred[0]}, status=HTTP_200_OK)
+        return Response({'AQI': aqi_data.pm25}, status=HTTP_200_OK)
 
     def post(self, request):
         data:dict = request.data

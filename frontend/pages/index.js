@@ -1,10 +1,11 @@
 import { Inter } from 'next/font/google'
 import { Card, Col, Row, Button, Text } from "@nextui-org/react";
 import pollutionImage from "../public/assets/pollution.png";
+import { useEffect, useState } from 'react';
 
 const inter = Inter({ subsets: ['latin'] })
 
-const Card5 = () => (
+const Card5 = ({ aqi, refetch, isLoading }) => (
   <Card css={{ w: "400px", h: "400px" }}>
     <Card.Header css={{ position: "absolute", zIndex: 1, top: 5 }}>
       <Col>
@@ -12,7 +13,7 @@ const Card5 = () => (
           Air Quality Index
         </Text>
         <Text h3 color="white">
-          Get AQI for your location
+          Get AQI
         </Text>
       </Col>
     </Card.Header>
@@ -26,14 +27,18 @@ const Card5 = () => (
       />
     </Card.Body>
 
-    <Card.Footer css={{ justifyItems: "flex-start", background :"#111111" }}>
+    <Card.Footer css={{ justifyItems: "flex-start", background: "#111111" }}>
       <Row wrap="wrap" justify="space-between" align="center">
-        <Text css={{
-          color:"#eeeeee"
+        {isLoading ? <Text css={{
+          color: "#eeeeee"
         }}>
-          Current AQI: 250
-        </Text>
-        <Button bordered color="warning" auto>
+          Loading....
+        </Text> : <Text css={{
+          color: "#eeeeee"
+        }}>
+          Current AQI: {aqi}
+        </Text>}
+        <Button bordered color="warning" auto onPress={refetch}>
           Refresh
         </Button>
       </Row>
@@ -42,6 +47,24 @@ const Card5 = () => (
 );
 
 export default function Home() {
+  const [aqi, setAqi] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  async function fetchData() {
+    try {
+      setIsLoading(true)
+      const data = await fetch("http://127.0.0.1:8000/api/aqi");
+      const jsonData = await data.json();
+      setAqi(jsonData.AQI);
+      setIsLoading(false);
+    }
+    catch (e) {
+      setIsLoading(false);
+      console.log(e);
+    }
+  }
+  useEffect(() => {
+    fetchData();
+  }, [])
   return (
     <div style={{
       width: "100vw",
@@ -51,7 +74,7 @@ export default function Home() {
       alignItems: "center",
       backgroundColor: "#0C0D12"
     }}>
-      <Card5 />
+      <Card5 aqi={aqi} refetch={fetchData} isLoading={isLoading} />
     </div>
   )
 }
