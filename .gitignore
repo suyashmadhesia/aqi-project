@@ -1,6 +1,8 @@
 env/
 __pycache__/
 .vscode/
+aqi/api/migrations/
+aqi/models
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
 profile_default/
