@@ -9,3 +9,4 @@ class AQI(models.Model):
     no2 = models.FloatField()
     nox = models.FloatField()
     co = models.FloatField()
+    temp= models.FloatField()

@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 
 const inter = Inter({ subsets: ['latin'] })
 
-const Card5 = ({ aqi, refetch, isLoading }) => (
+const Card5 = ({ aqi, refetch, isLoading, temp }) => (
   <Card css={{ w: "400px", h: "400px" }}>
     <Card.Header css={{ position: "absolute", zIndex: 1, top: 5 }}>
       <Col>
@@ -36,7 +36,7 @@ const Card5 = ({ aqi, refetch, isLoading }) => (
         </Text> : <Text css={{
           color: "#eeeeee"
         }}>
-          Current AQI: {aqi}
+          Current AQI: {aqi} and Temperature: {temp}°C
         </Text>}
         <Button bordered color="warning" auto onPress={refetch}>
           Refresh
@@ -48,6 +48,7 @@ const Card5 = ({ aqi, refetch, isLoading }) => (
 
 export default function Home() {
   const [aqi, setAqi] = useState(0);
+  const [temp, setTemp] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   async function fetchData() {
     try {
@@ -55,6 +56,7 @@ export default function Home() {
       const data = await fetch("http://192.168.43.139:8000/api/aqi");
       const jsonData = await data.json();
       setAqi(jsonData.AQI);
+      setTemp(jsonData.temp);
       setIsLoading(false);
     }
     catch (e) {
@@ -74,7 +76,7 @@ export default function Home() {
       alignItems: "center",
       backgroundColor: "#0C0D12"
     }}>
-      <Card5 aqi={aqi} refetch={fetchData} isLoading={isLoading} />
+      <Card5 aqi={aqi} refetch={fetchData} isLoading={isLoading} temp={temp} />
     </div>
   )
 }
