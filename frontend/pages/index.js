@@ -52,7 +52,7 @@ export default function Home() {
   async function fetchData() {
     try {
       setIsLoading(true)
-      const data = await fetch("http://127.0.0.1:8000/api/aqi");
+      const data = await fetch("http://192.168.43.139:8000/api/aqi");
       const jsonData = await data.json();
       setAqi(jsonData.AQI);
       setIsLoading(false);

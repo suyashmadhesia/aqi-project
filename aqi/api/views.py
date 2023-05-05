@@ -20,7 +20,7 @@ class AQIView(APIView):
         data = pd.DataFrame(currentValue)
         transformed_data = scaler.transform(data)
         pred = aqi_model.predict(transformed_data)
-        return Response({'AQI': aqi_data.pm25}, status=HTTP_200_OK)
+        return Response({'AQI': pred[0]}, status=HTTP_200_OK)
 
     def post(self, request):
         data:dict = request.data
